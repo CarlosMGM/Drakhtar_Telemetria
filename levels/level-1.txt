@@ -1,0 +1,4 @@
+6 9 1
+Zamdran 8 3
+Soldier 8 7 2
+Archer 6 7 4

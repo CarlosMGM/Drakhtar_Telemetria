@@ -1,0 +1,5 @@
+5 12 4
+RedValar 11 0
+Soldier 15 11 2
+Archer 10 11 4
+Monster 2 10 4

@@ -1,0 +1,5 @@
+6 9 3
+Dreilay 7 2
+Archer 5 8 3
+Soldier 8 8 2
+Knight 5 7 3
