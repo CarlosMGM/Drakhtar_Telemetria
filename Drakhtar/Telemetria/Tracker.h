@@ -10,8 +10,9 @@ class IPersistence;
 enum assets { PLAY_TRACKER };
 
 class Tracker {
-  static Tracker* instance_ = nullptr;
+  static Tracker* instance_;
   Tracker() = default;
+  ~Tracker() = default;
 
   std::string idSession_;
 
@@ -21,10 +22,14 @@ class Tracker {
   std::list<ITrackerAsset*> activeTrackers_;
 
  public:
+  static Tracker& getInstance();
+
   void init();
-  void activateTracker(assets tracker);
   void end();
-  static const Tracker& getInstance();
+
+  void activateTracker(assets tracker);
+  void setPersistence(IPersistence* persistence);
+
   void trackEvent(TrackerEvent* event);
   const std::string& getIdSession() const { return idSession_; };
 };

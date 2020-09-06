@@ -21,8 +21,10 @@ class TrackerEvent {
   TrackerEvent(TrackerEventType type);
 
  public:
+  virtual ~TrackerEvent() = default;
+
   const TrackerEventType eventType_;
-  const uint32_t idSession_;
+  const std::string idSession_;
 
   time_t getTimeStamp() const { return timestamp_; };
 

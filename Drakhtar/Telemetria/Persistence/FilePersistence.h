@@ -5,10 +5,11 @@
 
 #include "IPersistence.h"
 
-class FilePersistence : public IPersistence {
+class FilePersistence final : public IPersistence {
   std::list<std::string> data_;
 
  public:
   void send(TrackerEvent* event) override;
   void flush() override;
+  ~FilePersistence() = default;
 };

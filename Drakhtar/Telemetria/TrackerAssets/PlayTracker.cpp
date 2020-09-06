@@ -3,7 +3,7 @@
 
 #include "Telemetria/TrackerEvents/TrackerEvent.h"
 
-inline bool PlayTracker::accept(TrackerEvent* event) {
+bool PlayTracker::accept(TrackerEvent* event) {
   switch (event->eventType_) {
     case SESSION_START:
     case SESSION_END:

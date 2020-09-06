@@ -8,9 +8,14 @@
 #include "../Managers/TextureManager.h"
 #include "../Scenes/MenuScene.h"
 #include "../Scenes/TransitionScene.h"
+#include "../Telemetria/Configuration.h"
 #include "../Utils/Constants.h"
 #include "SDL_mixer.h"
 #include "SDL_ttf.h"
+
+#ifdef TELEMETRY
+#include "../Telemetria/Tracker.h"
+#endif
 
 Game::Game() {
   if (SDL_Init(SDL_INIT_EVENTS | SDL_INIT_TIMER | SDL_INIT_AUDIO) != 0) {
@@ -303,8 +308,8 @@ void Game::load() {
                 1);
   textures->add("Transition-Menu", "../images/Transition/Transition_1.png", 4,
                 1);
-  textures->add("Transition-Map6", "../images/Transition/Transition_6.png",
-                1, 1);
+  textures->add("Transition-Map6", "../images/Transition/Transition_6.png", 1,
+                1);
 
   // Recruitment
   textures->add("Recruitment-Background",
@@ -397,6 +402,11 @@ void Game::load() {
 
   sceneMachine_ = new SceneMachine();
   sceneMachine_->pushScene(new MenuScene());
+
+#ifdef TELEMETRY
+  TrackerConfiguration();
+  Tracker::getInstance().init();
+#endif
 }
 
 Game::~Game() {
@@ -414,6 +424,10 @@ void Game::run() const {
   while (!sceneMachine_->isEmpty()) {
     sceneMachine_->getCurrentScene()->run();
   }
+
+#ifdef TELEMETRY
+  Tracker::getInstance().end();
+#endif
 }
 
 SDL_Renderer* Game::getRenderer() { return getInstance()->renderer_; }

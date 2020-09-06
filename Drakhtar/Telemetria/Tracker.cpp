@@ -8,6 +8,8 @@
 #include "TrackerAssets/PlayTracker.h"
 #include "third_party/TinySHA1.hpp"
 
+Tracker* Tracker::instance_ = nullptr;
+
 void Tracker::init() {
   std::time_t timestamp;
   std::time(&timestamp);
@@ -26,15 +28,21 @@ void Tracker::activateTracker(assets tracker) {
 }
 
 void Tracker::end() {
+  delete persistence_;
   while (!activeTrackers_.empty()) {
     delete activeTrackers_.back();
     activeTrackers_.pop_back();
   }
+  delete instance_;
 }
 
-const Tracker& Tracker::getInstance() {
+Tracker& Tracker::getInstance() {
   if (instance_ == nullptr) instance_ = new Tracker();
   return *instance_;
+}
+
+void Tracker::setPersistence(IPersistence* persistence) {
+  persistence_ = persistence;
 }
 
 void Tracker::trackEvent(TrackerEvent* event) {

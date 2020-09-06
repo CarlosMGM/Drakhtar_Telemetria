@@ -2,4 +2,6 @@
 
 #include "SessionStartEvent.h"
 
-SessionStartEvent::SessionStartEvent() : TrackerEvent(SESSION_START){};
+SessionStartEvent::SessionStartEvent() : TrackerEvent(SESSION_START) {}
+
+std::string SessionStartEvent::toJson() { return std::string(); };
