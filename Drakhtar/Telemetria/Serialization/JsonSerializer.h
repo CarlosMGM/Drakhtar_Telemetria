@@ -3,7 +3,7 @@
 
 class JsonSerializer : public ISerializer {
  public:
-  std::string serialize(TrackerEvent* event) override;
+  std::string serialize(TrackerEvent* event) noexcept override;
   JsonSerializer() = default;
   ~JsonSerializer() = default;
 };

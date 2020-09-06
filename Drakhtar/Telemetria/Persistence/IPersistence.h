@@ -1,12 +1,16 @@
 #pragma once
+#include <ctime>
+#include <mutex>
+#include <queue>
+#include <thread>
 
 class TrackerEvent;
 class ISerializer;
 
 class IPersistence {
-  ISerializer* serializer_ = nullptr;
-
  protected:
+  ISerializer* serializer_ = nullptr;
+  std::queue<TrackerEvent*> events{};
   IPersistence() = default;
 
  public:

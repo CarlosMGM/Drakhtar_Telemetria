@@ -21,7 +21,7 @@ void TrackerConfiguration() {
   ISerializer* serializer = nullptr;
   IPersistence* persistence = nullptr;
 #ifdef FILE_PERSISTENCE
-  persistence = new FilePersistence();
+  persistence = new FilePersistence(10);
 #else
 #endif
 

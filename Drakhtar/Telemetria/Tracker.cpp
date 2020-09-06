@@ -6,15 +6,19 @@
 
 #include "Persistence/IPersistence.h"
 #include "TrackerAssets/PlayTracker.h"
+#include "TrackerEvents/SessionStartEvent.h"
 #include "third_party/TinySHA1.hpp"
 
 Tracker* Tracker::instance_ = nullptr;
+bool Tracker::running = false;
 
 void Tracker::init() {
   std::time_t timestamp;
   std::time(&timestamp);
 
   idSession_ = getSpecialId(timestamp);
+  running = true;
+  trackEvent(new SessionStartEvent());
 }
 
 void Tracker::activateTracker(assets tracker) {
@@ -28,6 +32,10 @@ void Tracker::activateTracker(assets tracker) {
 }
 
 void Tracker::end() {
+
+  // send SESSION_FINISH
+  
+  running = false;
   delete persistence_;
   while (!activeTrackers_.empty()) {
     delete activeTrackers_.back();

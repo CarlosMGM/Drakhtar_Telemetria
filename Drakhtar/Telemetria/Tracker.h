@@ -11,6 +11,7 @@ enum assets { PLAY_TRACKER };
 
 class Tracker {
   static Tracker* instance_;
+  static bool running;
   Tracker() = default;
   ~Tracker() = default;
 
@@ -23,6 +24,7 @@ class Tracker {
 
  public:
   static Tracker& getInstance();
+  static bool isRunning() { return running; }
 
   void init();
   void end();
