@@ -6,8 +6,6 @@
 #include "IPersistence.h"
 
 class FilePersistence final : public IPersistence {
-  std::list<std::string> data_;
-
   std::mutex eventMutex;
   uint32_t timer_ = 60;
   std::thread* flushThread_;

@@ -11,6 +11,7 @@ class IPersistence {
  protected:
   ISerializer* serializer_ = nullptr;
   std::queue<TrackerEvent*> events{};
+  std::queue<std::string> data_{};
   IPersistence() = default;
 
  public:

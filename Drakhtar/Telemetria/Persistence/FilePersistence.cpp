@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <ctime>
+#include <fstream>
 
 #include "../Serialization/ISerializer.h"
 #include "../Tracker.h"
@@ -22,11 +23,23 @@ void FilePersistence::flush() {
     auto& event = events.front();
     events.pop();
     eventMutex.unlock();
-    serializer_->serialize(event);
+    data_.push(serializer_->serialize(event));
     delete event;
     eventMutex.lock();
   }
   eventMutex.unlock();
+
+  std::ofstream file;
+  file.open("telemetry" + serializer_->getExtension(),
+            std::ofstream::out | std::ofstream::app);
+
+  while (!data_.empty()) {
+    std::string& event = data_.front();
+    file << event;
+    data_.pop();
+  }
+
+  file.close();
 }
 
 void FilePersistence::run() {
