@@ -23,6 +23,7 @@ class TrackerEvent {
  public:
   const TrackerEventType eventType_;
   const uint32_t idSession_;
+
   time_t getTimeStamp() const { return timestamp_; };
 
   virtual std::string toJson() = 0;

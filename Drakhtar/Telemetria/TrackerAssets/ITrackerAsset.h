@@ -1,5 +1,5 @@
 #pragma once
-#include "Telemetria/TrackerEvents/TrackerEvent.h"
+class TrackerEvent;
 
 class ITrackerAsset {
  public:

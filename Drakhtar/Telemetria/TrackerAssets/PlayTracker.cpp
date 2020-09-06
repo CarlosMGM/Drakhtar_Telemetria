@@ -1,6 +1,8 @@
 #pragma once
 #include "PlayTracker.h"
 
+#include "Telemetria/TrackerEvents/TrackerEvent.h"
+
 inline bool PlayTracker::accept(TrackerEvent* event) {
   switch (event->eventType_) {
     case SESSION_START:

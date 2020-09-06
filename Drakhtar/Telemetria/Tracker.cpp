@@ -4,6 +4,7 @@
 
 #include <cstdio>
 
+#include "Persistence/IPersistence.h"
 #include "TrackerAssets/PlayTracker.h"
 #include "third_party/TinySHA1.hpp"
 
@@ -17,7 +18,7 @@ void Tracker::init() {
 void Tracker::activateTracker(assets tracker) {
   switch (tracker) {
     case PLAY_TRACKER:
-      activeTrackers.push_back(new PlayTracker());
+      activeTrackers_.push_back(new PlayTracker());
       break;
     default:
       break;
@@ -25,9 +26,9 @@ void Tracker::activateTracker(assets tracker) {
 }
 
 void Tracker::end() {
-  while (!activeTrackers.empty()) {
-    delete activeTrackers.back();
-    activeTrackers.pop_back();
+  while (!activeTrackers_.empty()) {
+    delete activeTrackers_.back();
+    activeTrackers_.pop_back();
   }
 }
 
@@ -36,7 +37,14 @@ const Tracker& Tracker::getInstance() {
   return *instance_;
 }
 
-void Tracker::trackEvent() {}
+void Tracker::trackEvent(TrackerEvent* event) {
+  bool accepted = false;
+  for (auto it = activeTrackers_.begin();
+       !accepted && it != activeTrackers_.end(); ++it)
+    accepted = (*it)->accept(event);
+
+  if (accepted) persistence_->send(event);
+}
 
 std::string Tracker::getSpecialId(std::time_t& timestamp) {
   GUID gidReference;
