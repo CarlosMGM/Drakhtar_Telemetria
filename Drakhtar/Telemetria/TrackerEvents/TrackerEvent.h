@@ -28,5 +28,5 @@ class TrackerEvent {
 
   time_t getTimeStamp() const { return timestamp_; };
 
-  virtual std::string toJson() = 0;
+  virtual std::string toJson();
 };

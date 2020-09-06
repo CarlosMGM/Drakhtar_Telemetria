@@ -4,4 +4,10 @@
 
 SessionStartEvent::SessionStartEvent() : TrackerEvent(SESSION_START) {}
 
-std::string SessionStartEvent::toJson() { return std::string(); };
+std::string SessionStartEvent::toJson() {
+  std::string str = "{\n";
+  str += R"(  "Session Start Event": {)";
+  str += "\n" + TrackerEvent::toJson() + +"\n";
+  str += "  }\n\n";
+  return str;
+};
