@@ -9,9 +9,9 @@ EndEvent::EndEvent(TrackerEventType type, uint32_t duration)
 }
 
 std::string EndEvent::toJson() {
-  std::string str = "\n" + TrackerEvent::toJson() + +",\n";
+  std::string str = TrackerEvent::toJson() + +",\n";
 
-  str += R"(  "Duration": ")";
+  str += R"(    "Duration": ")";
   if (duration_.hours != 0) {
     if (duration_.hours < 10) str += "0";
     str += std::to_string(duration_.hours) + ":";

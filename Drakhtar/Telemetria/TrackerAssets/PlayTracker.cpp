@@ -1,4 +1,3 @@
-#pragma once
 #include "PlayTracker.h"
 
 #include "Telemetria/TrackerEvents/TrackerEvent.h"

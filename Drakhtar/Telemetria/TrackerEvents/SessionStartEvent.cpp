@@ -1,5 +1,3 @@
-#pragma once
-
 #include "SessionStartEvent.h"
 
 SessionStartEvent::SessionStartEvent() : TrackerEvent(SESSION_START) {}
@@ -7,7 +5,7 @@ SessionStartEvent::SessionStartEvent() : TrackerEvent(SESSION_START) {}
 std::string SessionStartEvent::toJson() {
   std::string str = "{\n";
   str += R"(  "Session Start Event": {)";
-  str += "\n" + TrackerEvent::toJson() + +"\n";
-  str += "  }\n\n";
+  str += "\n" + TrackerEvent::toJson() +"\n";
+  str += "  }";
   return str;
 };

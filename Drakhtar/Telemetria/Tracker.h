@@ -16,6 +16,7 @@ class Tracker {
   ~Tracker() = default;
 
   std::string idSession_;
+  std::time_t timestamp_;
 
   std::string getSpecialId(std::time_t& timestamp);
 
