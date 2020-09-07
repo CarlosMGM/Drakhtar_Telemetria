@@ -1,8 +1,10 @@
 // Copyright 2019 the Drakhtar authors. All rights reserved. MIT license.
 
 #include "GameScene.h"
+
 #include <algorithm>
 #include <fstream>
+
 #include "Controllers/AIController.h"
 #include "Controllers/PlayerController.h"
 #include "Errors/DrakhtarError.h"
@@ -26,13 +28,13 @@
 #include "Structures/Game.h"
 #include "Structures/Team.h"
 #include "Structures/UnitFactory.h"
+#include "Telemetria/Configuration.h"
 #include "Utils/Constants.h"
 
-#include "Telemetria/Configuration.h"
-
 #ifdef TELEMETRY
-#include "Telemetria/TrackerEvents/LevelStartEvent.h"
 #include "Telemetria/TrackerEvents/LevelEndEvent.h"
+#include "Telemetria/TrackerEvents/LevelStartEvent.h"
+#include "Telemetria/TrackerEvents/RoundEndEvent.h"
 #endif
 
 auto audio = SDLAudioManager::getInstance();
@@ -176,12 +178,12 @@ void GameScene::preload() {
         ->setTutorialDone(true);
   }
 
-  setGame(true);
-  team1_->getController()->start();
-
 #ifdef TELEMETRY
   Tracker::getInstance().trackEvent(new LevelStartEvent(battle_));
 #endif
+
+  setGame(true);
+  team1_->getController()->start();
 }
 
 void GameScene::pause() {
@@ -306,14 +308,19 @@ void GameScene::gameOver(bool victory) {
       new GameOverPanel(this, TextureManager::get("UI-OptionsMenu"),
                         {WIN_WIDTH / 2, WIN_HEIGHT / 2},
                         {WIN_WIDTH / 2, WIN_HEIGHT / 2}, victory);
+
+#ifdef TELEMETRY
+  Tracker::getInstance().trackEvent(new RoundEndEvent());
+#endif
+
   if (victory) {
     saveStatus();
 #ifdef TELEMETRY
     Tracker::getInstance().trackEvent(new LevelEndEvent(battle_, VICTORY));
-    }else
+  } else
     Tracker::getInstance().trackEvent(new LevelEndEvent(battle_, DEFEAT));
 #else
-    }
+  }
 #endif
   addGameObject(gameOverPanel_);
 }

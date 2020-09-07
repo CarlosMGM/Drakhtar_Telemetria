@@ -1,6 +1,7 @@
 // Copyright 2019 the Drakhtar authors. All rights reserved. MIT license.
 
 #include "UnitsController.h"
+
 #include "Errors/DrakhtarError.h"
 #include "EventListeners/EventListener.h"
 #include "GameObjects/Battalion.h"
@@ -18,6 +19,14 @@
 #include "Structures/Team.h"
 #include "Structures/Texture.h"
 #include "Structures/Tween.h"
+#include "Telemetria/Configuration.h"
+
+#ifdef TELEMETRY
+#include "Telemetria/TrackerEvents/RoundEndEvent.h"
+#include "Telemetria/TrackerEvents/RoundStartEvent.h"
+
+Unit* firstUnit = nullptr;
+#endif
 
 UnitsController::UnitsController(Board* board, GameScene* scene, Team* team,
                                  Team* oppositeTeam)
@@ -35,9 +44,20 @@ void UnitsController::start() {
   // Deactivate all listeners
   for (auto& listener : listeners_) listener->setActive(true);
   activeUnit_ = getState()->getActiveUnit();
+
+#ifdef TELEMETRY
+  if (firstUnit == nullptr) firstUnit = activeUnit_;
+  if (firstUnit == activeUnit_)
+    Tracker::getInstance().trackEvent(new RoundStartEvent());
+#endif
 }
 
 void UnitsController::finish() {
+#ifdef TELEMETRY
+  if (getState()->getNextUnits<2>().back() == firstUnit)
+    Tracker::getInstance().trackEvent(new RoundEndEvent());
+#endif
+
   if (activeUnit_ != nullptr) {
     for (auto& listener : listeners_) listener->setActive(false);
     activeUnit_ = nullptr;

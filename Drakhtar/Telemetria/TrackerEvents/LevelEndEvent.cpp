@@ -12,8 +12,13 @@ std::string resultToString(LevelResult result) {
     case QUIT:
       return "QUIT";
     case ERROR:
+    default:
       return "ERROR";
   }
+}
+
+void LevelEndEvent::setRoundsPlayed(uint32_t roundsPlayed) {
+  roundsPlayed_ = roundsPlayed;
 }
 
 std::string LevelEndEvent::toJson() {
@@ -22,6 +27,7 @@ std::string LevelEndEvent::toJson() {
   str += R"(      "Event Type": "Level End Event",)";
   str += "\n" + EndEvent::toJson() + +",\n";
   str += R"(      "Level#": )" + std::to_string(levelNumber_) + ",\n";
+  str += R"(      "Rounds Played": )" + std::to_string(roundsPlayed_) + ",\n";
   str += R"(      "Result": ")" + resultToString(result_) + "\"\n";
   str += "    }";
   return str;

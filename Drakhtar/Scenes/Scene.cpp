@@ -13,13 +13,13 @@
 #include "SDL.h"
 #include "Scenes/RecruitScene.h"
 #include "Structures/Game.h"
+#include "Telemetria/Configuration.h"
 #include "Utils/Constants.h"
 #include "Utils/TimePool.h"
 
-#include "Telemetria/Configuration.h"
-
 #ifdef TELEMETRY
 #include "Telemetria/TrackerEvents/LevelEndEvent.h"
+#include "Telemetria/TrackerEvents/RoundEndEvent.h"
 #endif
 
 Scene::Scene() = default;
@@ -116,13 +116,13 @@ void Scene::handleEvents() {
     if (event.type == SDL_QUIT) {
 #ifdef TELEMETRY
       if (getGame()) {
+        Tracker::getInstance().trackEvent(new RoundEndEvent());
         Tracker::getInstance().trackEvent(new LevelEndEvent(
             reinterpret_cast<GameScene*>(this)->getBattleInd(), QUIT));
       }
 #endif
 
       return finish(true);
-
     }
 
     Input::instance()->update(event);

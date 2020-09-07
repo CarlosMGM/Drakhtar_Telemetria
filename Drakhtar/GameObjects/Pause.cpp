@@ -11,12 +11,12 @@
 #include "Scenes/RecruitScene.h"
 #include "Scenes/Scene.h"
 #include "Structures/Game.h"
+#include "Telemetria/Configuration.h"
 #include "Utils/Constants.h"
 #include "Utils/Vector2D.h"
-
-#include "Telemetria/Configuration.h"
 #ifdef TELEMETRY
 #include "Telemetria/TrackerEvents/LevelEndEvent.h"
+#include "Telemetria/TrackerEvents/RoundEndEvent.h"
 #endif
 
 Pause::Pause(Scene* scene) : GameObject(scene, nullptr) {
@@ -34,13 +34,12 @@ Pause::Pause(Scene* scene) : GameObject(scene, nullptr) {
         Game::getSceneMachine()->changeScene(
             new GameScene(reinterpret_cast<GameScene*>(scene)->getBattleInd()));
 
-
 #ifdef TELEMETRY
+
+        Tracker::getInstance().trackEvent(new RoundEndEvent());
         Tracker::getInstance().trackEvent(new LevelEndEvent(
             reinterpret_cast<GameScene*>(scene)->getBattleInd(), QUIT));
 #endif
-
-
       },
       "Restart", "ButtonFont");
   const auto exit = new Button(
@@ -51,14 +50,14 @@ Pause::Pause(Scene* scene) : GameObject(scene, nullptr) {
       []() {
         GameManager::getInstance()->reset();
 
-
 #ifdef TELEMETRY
-        Tracker::getInstance().trackEvent(new LevelEndEvent(
-            reinterpret_cast<GameScene*>(Game::getSceneMachine()->getCurrentScene())
-                ->getBattleInd(),
-            QUIT));
+        Tracker::getInstance().trackEvent(new RoundEndEvent());
+        Tracker::getInstance().trackEvent(
+            new LevelEndEvent(reinterpret_cast<GameScene*>(
+                                  Game::getSceneMachine()->getCurrentScene())
+                                  ->getBattleInd(),
+                              QUIT));
 #endif
-
 
         Game::getSceneMachine()->changeScene(new MenuScene());
         SDLAudioManager::getInstance()->playChannel(6, 0, 0);

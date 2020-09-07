@@ -1,7 +1,7 @@
 #pragma once
 #include "TrackerEvent.h"
 
-class RoundStartEvent : TrackerEvent {
+class RoundStartEvent : public TrackerEvent {
   uint32_t roundNumber_;
 
  public:
