@@ -22,9 +22,10 @@
 #include "Telemetria/Configuration.h"
 
 #ifdef TELEMETRY
+#include "Telemetria/TrackerEvents/PlayerTurnEndEvent.h"
+#include "Telemetria/TrackerEvents/PlayerTurnStartEvent.h"
 #include "Telemetria/TrackerEvents/RoundEndEvent.h"
 #include "Telemetria/TrackerEvents/RoundStartEvent.h"
-
 Unit* firstUnit = nullptr;
 #endif
 
@@ -49,11 +50,15 @@ void UnitsController::start() {
   if (firstUnit == nullptr) firstUnit = activeUnit_;
   if (firstUnit == activeUnit_)
     Tracker::getInstance().trackEvent(new RoundStartEvent());
+  if (team_->getColor() == Color::BLUE)
+    Tracker::getInstance().trackEvent(new PlayerTurnStartEvent());
 #endif
 }
 
 void UnitsController::finish() {
 #ifdef TELEMETRY
+  if (team_->getColor() == Color::BLUE)
+    Tracker::getInstance().trackEvent(new PlayerTurnEndEvent());
   if (getState()->getNextUnits<2>().back() == firstUnit)
     Tracker::getInstance().trackEvent(new RoundEndEvent());
 #endif

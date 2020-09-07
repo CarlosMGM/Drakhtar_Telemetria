@@ -15,8 +15,11 @@
 #include "Utils/Constants.h"
 #include "Utils/Vector2D.h"
 #ifdef TELEMETRY
+#include "Managers/State.h"
 #include "Telemetria/TrackerEvents/LevelEndEvent.h"
+#include "Telemetria/TrackerEvents/PlayerTurnEndEvent.h"
 #include "Telemetria/TrackerEvents/RoundEndEvent.h"
+#include "Unit.h"
 #endif
 
 Pause::Pause(Scene* scene) : GameObject(scene, nullptr) {
@@ -35,7 +38,13 @@ Pause::Pause(Scene* scene) : GameObject(scene, nullptr) {
             new GameScene(reinterpret_cast<GameScene*>(scene)->getBattleInd()));
 
 #ifdef TELEMETRY
-
+        if (reinterpret_cast<GameScene*>(
+                Game::getSceneMachine()->getCurrentScene())
+                ->getState()
+                ->getActiveUnit()
+                ->getTeam()
+                ->getColor() == Color::BLUE)
+          Tracker::getInstance().trackEvent(new PlayerTurnEndEvent());
         Tracker::getInstance().trackEvent(new RoundEndEvent());
         Tracker::getInstance().trackEvent(new LevelEndEvent(
             reinterpret_cast<GameScene*>(scene)->getBattleInd(), QUIT));
@@ -51,6 +60,14 @@ Pause::Pause(Scene* scene) : GameObject(scene, nullptr) {
         GameManager::getInstance()->reset();
 
 #ifdef TELEMETRY
+        if (reinterpret_cast<GameScene*>(
+                Game::getSceneMachine()->getCurrentScene())
+                ->getState()
+                ->getActiveUnit()
+                ->getTeam()
+                ->getColor() == Color::BLUE)
+          Tracker::getInstance().trackEvent(new PlayerTurnEndEvent());
+
         Tracker::getInstance().trackEvent(new RoundEndEvent());
         Tracker::getInstance().trackEvent(
             new LevelEndEvent(reinterpret_cast<GameScene*>(

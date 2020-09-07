@@ -13,11 +13,15 @@
 #include "SDL.h"
 #include "Scenes/RecruitScene.h"
 #include "Structures/Game.h"
+#include "Structures/Team.h"
 #include "Telemetria/Configuration.h"
+#include "Telemetria/TrackerEvents/PlayerTurnEndEvent.h"
 #include "Utils/Constants.h"
 #include "Utils/TimePool.h"
 
 #ifdef TELEMETRY
+#include "GameObjects/Unit.h"
+#include "Managers/State.h"
 #include "Telemetria/TrackerEvents/LevelEndEvent.h"
 #include "Telemetria/TrackerEvents/RoundEndEvent.h"
 #endif
@@ -116,6 +120,13 @@ void Scene::handleEvents() {
     if (event.type == SDL_QUIT) {
 #ifdef TELEMETRY
       if (getGame()) {
+        Color c = reinterpret_cast<GameScene*>(this)
+                      ->getState()
+                      ->getActiveUnit()
+                      ->getTeam()
+                      ->getColor();
+        if (c == Color::BLUE)
+          Tracker::getInstance().trackEvent(new PlayerTurnEndEvent());
         Tracker::getInstance().trackEvent(new RoundEndEvent());
         Tracker::getInstance().trackEvent(new LevelEndEvent(
             reinterpret_cast<GameScene*>(this)->getBattleInd(), QUIT));
