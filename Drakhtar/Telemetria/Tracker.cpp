@@ -6,12 +6,14 @@
 
 #include "Persistence/IPersistence.h"
 #include "TrackerAssets/PlayTracker.h"
-#include "TrackerEvents/SessionStartEvent.h"
 #include "TrackerEvents/SessionEndEvent.h"
+#include "TrackerEvents/SessionStartEvent.h"
 #include "third_party/TinySHA1.hpp"
 
 Tracker* Tracker::instance_ = nullptr;
 bool Tracker::running = false;
+
+std::string Tracker::getIdSession() { return idSession_; }
 
 void Tracker::init() {
   std::time(&timestamp_);

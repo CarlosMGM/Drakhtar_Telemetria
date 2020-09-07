@@ -10,28 +10,32 @@
 
 FilePersistence::FilePersistence(uint32_t timer) {
   timer_ = timer;
+  std::ofstream file;
   startThread();
 }
 void FilePersistence::send(TrackerEvent* event) {
-  std::lock_guard<std::mutex> lock(eventMutex);
+  std::lock_guard<std::mutex> lock(eventMutex_);
   events.push(event);
 }
 
 void FilePersistence::flush() {
-  eventMutex.lock();
+  eventMutex_.lock();
   for (auto size = events.size(); size > 0; --size) {
     auto& event = events.front();
     events.pop();
-    eventMutex.unlock();
+    eventMutex_.unlock();
     data_.push(serializer_->serialize(event));
     delete event;
-    eventMutex.lock();
+    eventMutex_.lock();
   }
-  eventMutex.unlock();
+  eventMutex_.unlock();
 
   std::ofstream file;
-  file.open("telemetry" + serializer_->getExtension(),
-            std::ofstream::out | std::ofstream::app);
+  if (filename_.empty())
+    filename_ = "Telemetry/" + Tracker::getInstance().getIdSession() +
+                serializer_->getExtension();
+
+  file.open(filename_, std::ofstream::out | std::ofstream::app);
 
   while (!data_.empty()) {
     std::string& event = data_.front();

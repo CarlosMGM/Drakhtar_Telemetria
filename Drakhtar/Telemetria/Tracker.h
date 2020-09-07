@@ -27,6 +27,8 @@ class Tracker {
   static Tracker& getInstance();
   static bool isRunning() { return running; }
 
+  std::string getIdSession();
+
   void init();
   void end();
 
