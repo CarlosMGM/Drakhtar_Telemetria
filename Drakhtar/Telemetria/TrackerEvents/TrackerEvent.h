@@ -11,7 +11,7 @@ enum TrackerEventType {
   ROUND_START,
   ROUND_END,
   PLAYER_TURN_START,
-  PLAYER_TURN_TIME
+  PLAYER_TURN_END
 };
 
 class TrackerEvent {

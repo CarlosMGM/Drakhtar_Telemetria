@@ -10,8 +10,14 @@ bool PlayTracker::accept(TrackerEvent* event) {
   switch (event->eventType_) {
     case SESSION_START:
     case SESSION_END:
+      return true;
     case PLAYER_TURN_START:
-    case PLAYER_TURN_TIME:
+      std::time(&startPlayerTurnTime_);
+      return true;
+    case PLAYER_TURN_END:
+      std::time(&endTime);
+      reinterpret_cast<EndEvent*>(event)->setDuration(
+          std::difftime(endTime, startPlayerTurnTime_));
       return true;
 
     case ROUND_START:
