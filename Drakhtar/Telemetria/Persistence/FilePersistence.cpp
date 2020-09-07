@@ -3,6 +3,7 @@
 #include <chrono>
 #include <ctime>
 #include <fstream>
+#include <iostream>
 
 #include "../Serialization/ISerializer.h"
 #include "../Tracker.h"
@@ -19,45 +20,56 @@ void FilePersistence::send(TrackerEvent* event) {
 }
 
 void FilePersistence::flush() {
-  eventMutex_.lock();
-  for (auto size = events.size(); size > 0; --size) {
-    auto& event = events.front();
-    events.pop();
-    eventMutex_.unlock();
-    data_.push(serializer_->serialize(event));
-    delete event;
-    eventMutex_.lock();
-  }
-  eventMutex_.unlock();
-
   std::ofstream file;
-  if (filename_.empty())
-    filename_ = "Telemetry/" + Tracker::getInstance().getIdSession() +
-                serializer_->getExtension();
+  try {
+    eventMutex_.lock();
+    for (auto size = events.size(); size > 0; --size) {
+      auto& event = events.front();
+      events.pop();
+      eventMutex_.unlock();
+      data_.push(serializer_->serialize(event));
+      delete event;
+      eventMutex_.lock();
+    }
+    eventMutex_.unlock();
 
-  file.open(filename_, std::ofstream::out | std::ofstream::app);
+    if (filename_.empty())
+      filename_ = "Telemetry/" + Tracker::getInstance().getIdSession() +
+                  serializer_->getExtension();
 
-  while (!data_.empty()) {
-    std::string& event = data_.front();
-    file << event;
-    data_.pop();
+    file.open(filename_, std::ofstream::out | std::ofstream::app);
+    if (file.fail())
+      throw std::exception("Tracker Error bin\Telemetry Folder is missing.");
+    while (!data_.empty()) {
+      std::string& event = data_.front();
+      file << event;
+      data_.pop();
+    }
+
+    file.close();
+  } catch (std::exception& e) {
+    file.close();
+
+    throw std::exception("Tracker Error bin\Telemetry Folder is missing.");
   }
-
-  file.close();
 }
 
 void FilePersistence::run() {
-  std::this_thread::sleep_for(std::chrono::seconds(1));
-  float previousFlushTime = std::clock();
-  previousFlushTime /= CLOCKS_PER_SEC;
-  while (Tracker::isRunning()) {
-    float currentTime = std::clock();
-    currentTime /= CLOCKS_PER_SEC;
-    if (currentTime - previousFlushTime >= timer_) {
-      flush();
-      previousFlushTime = currentTime;
+  try {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    float previousFlushTime = std::clock();
+    previousFlushTime /= CLOCKS_PER_SEC;
+    while (Tracker::isRunning()) {
+      float currentTime = std::clock();
+      currentTime /= CLOCKS_PER_SEC;
+      if (currentTime - previousFlushTime >= timer_) {
+        flush();
+        previousFlushTime = currentTime;
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  } catch (std::exception& e) {
+    std::cerr << e.what();
   }
 }
 
@@ -68,5 +80,9 @@ void FilePersistence::startThread() {
 FilePersistence::~FilePersistence() {
   flushThread_->join();
   delete flushThread_;
-  flush();
+  try {
+    flush();
+  } catch (std::exception& e) {
+    std::cerr << e.what();
+  }
 }

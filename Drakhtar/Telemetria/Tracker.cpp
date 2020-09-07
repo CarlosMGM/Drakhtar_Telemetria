@@ -3,6 +3,7 @@
 #include <combaseapi.h>
 
 #include <cstdio>
+#include <iostream>
 
 #include "Persistence/IPersistence.h"
 #include "TrackerAssets/PlayTracker.h"
@@ -68,30 +69,38 @@ void Tracker::trackEvent(TrackerEvent* event) {
 }
 
 std::string Tracker::getSpecialId(std::time_t& timestamp) {
-  GUID gidReference;
-  HRESULT hCreateGuid = CoCreateGuid(&gidReference);
-  sha1::SHA1 s;
-  uint64_t val[4];
-  val[0] = timestamp + gidReference.Data1;
-  val[1] = timestamp + gidReference.Data2;
-  val[2] = timestamp + gidReference.Data3;
+  try {
+    GUID gidReference;
+    HRESULT hCreateGuid = CoCreateGuid(&gidReference);
+    if (hCreateGuid != S_OK)
+      throw std::exception(
+          "TrackerError: No se ha podido crear IdSession Correctamente");
+    sha1::SHA1 s;
+    uint64_t val[4];
+    val[0] = timestamp + gidReference.Data1;
+    val[1] = timestamp + gidReference.Data2;
+    val[2] = timestamp + gidReference.Data3;
 
-  uint64_t aux = 0;
-  for (int i = 0; i < 8; ++i) {
-    aux += (gidReference.Data4[i] << i * sizeof(char));
+    uint64_t aux = 0;
+    for (int i = 0; i < 8; ++i) {
+      aux += (gidReference.Data4[i] << i * sizeof(char));
+    }
+    val[3] = timestamp + aux;
+
+    s.processBytes(val, sizeof(int64_t) * 4);
+
+    uint32_t digest[5];
+
+    s.getDigest(digest);
+
+    char tmp[48];
+
+    snprintf(tmp, 45, "%08X-%08X-%08X-%08X-%08X", digest[0], digest[1],
+             digest[2], digest[3], digest[4]);
+
+    return std::string(tmp);
+  } catch (std::exception& e) {
+    std::cerr << e.what();
+    return "MISSING";
   }
-  val[3] = timestamp + aux;
-
-  s.processBytes(val, sizeof(int64_t) * 4);
-
-  uint32_t digest[5];
-
-  s.getDigest(digest);
-
-  char tmp[48];
-
-  snprintf(tmp, 45, "%08X-%08X-%08X-%08X-%08X", digest[0], digest[1], digest[2],
-           digest[3], digest[4]);
-
-  return std::string(tmp);
 }
