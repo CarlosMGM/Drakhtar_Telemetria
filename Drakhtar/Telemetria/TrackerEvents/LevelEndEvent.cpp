@@ -1,8 +1,8 @@
 #include "LevelEndEvent.h"
 
-LevelEndEvent::LevelEndEvent(uint32_t duration, uint32_t levelNumber,
+LevelEndEvent::LevelEndEvent(uint32_t levelNumber,
                              LevelResult result)
-    : EndEvent(LEVEL_END, duration),
+    : EndEvent(LEVEL_END),
       levelNumber_(levelNumber),
       result_(result) {}
 
@@ -24,7 +24,7 @@ std::string LevelEndEvent::toJson() {
   str += R"(  "Level End Event": {)";
   str += "\n" + TrackerEvent::toJson() + +",\n";
   str += R"(    "Level #": )" + std::to_string(levelNumber_) + ",\n";
-  str += R"(    "Result": ")"  + resultToString(result_) + "\",\n";
+  str += R"(    "Result": ")"  + resultToString(result_) + "\"\n";
   str += "  }";
   return str;
 

@@ -16,6 +16,12 @@
 #include "Utils/Constants.h"
 #include "Utils/TimePool.h"
 
+#include "Telemetria/Configuration.h"
+
+#ifdef TELEMETRY
+#include "Telemetria/TrackerEvents/LevelEndEvent.h"
+#endif
+
 Scene::Scene() = default;
 Scene::~Scene() = default;
 
@@ -107,7 +113,17 @@ void Scene::handleEvents() {
   // Handle all events
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
-    if (event.type == SDL_QUIT) return finish(true);
+    if (event.type == SDL_QUIT) {
+#ifdef TELEMETRY
+      if (getGame()) {
+        Tracker::getInstance().trackEvent(new LevelEndEvent(
+            reinterpret_cast<GameScene*>(this)->getBattleInd(), QUIT));
+      }
+#endif
+
+      return finish(true);
+
+    }
 
     Input::instance()->update(event);
     for (auto gameObject : gameObjects_)

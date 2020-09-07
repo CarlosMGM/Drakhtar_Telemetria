@@ -13,7 +13,7 @@ class LevelEndEvent : public EndEvent {
   LevelResult result_;
 
  public:
- LevelEndEvent(uint32_t duration, uint32_t levelNumber, LevelResult result);
+ LevelEndEvent(uint32_t levelNumber, LevelResult result);
   ~LevelEndEvent() override = default;
   std::string toJson() override;
 };

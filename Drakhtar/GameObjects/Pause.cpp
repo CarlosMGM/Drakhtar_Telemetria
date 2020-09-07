@@ -14,6 +14,11 @@
 #include "Utils/Constants.h"
 #include "Utils/Vector2D.h"
 
+#include "Telemetria/Configuration.h"
+#ifdef TELEMETRY
+#include "Telemetria/TrackerEvents/LevelEndEvent.h"
+#endif
+
 Pause::Pause(Scene* scene) : GameObject(scene, nullptr) {
   const auto panel =
       new GameObject(scene_, TextureManager::get("Pause-Panel"),
@@ -28,6 +33,14 @@ Pause::Pause(Scene* scene) : GameObject(scene, nullptr) {
       [scene]() {
         Game::getSceneMachine()->changeScene(
             new GameScene(reinterpret_cast<GameScene*>(scene)->getBattleInd()));
+
+
+#ifdef TELEMETRY
+        Tracker::getInstance().trackEvent(new LevelEndEvent(
+            reinterpret_cast<GameScene*>(scene)->getBattleInd(), QUIT));
+#endif
+
+
       },
       "Restart", "ButtonFont");
   const auto exit = new Button(
@@ -37,6 +50,16 @@ Pause::Pause(Scene* scene) : GameObject(scene, nullptr) {
                     static_cast<int>(WIN_HEIGHT / 11.25)),
       []() {
         GameManager::getInstance()->reset();
+
+
+#ifdef TELEMETRY
+        Tracker::getInstance().trackEvent(new LevelEndEvent(
+            reinterpret_cast<GameScene*>(Game::getSceneMachine()->getCurrentScene())
+                ->getBattleInd(),
+            QUIT));
+#endif
+
+
         Game::getSceneMachine()->changeScene(new MenuScene());
         SDLAudioManager::getInstance()->playChannel(6, 0, 0);
       },

@@ -1,7 +1,10 @@
 #include "EndEvent.h"
 
-EndEvent::EndEvent(TrackerEventType type, uint32_t duration)
+EndEvent::EndEvent(TrackerEventType type)
     : TrackerEvent(type) {
+}
+
+void EndEvent::setDuration(uint32_t duration) {
   duration_.seconds = duration % 60;
   duration /= 60;
   duration_.minutes = duration % 60;

@@ -3,7 +3,7 @@
 
 class EndEvent : public TrackerEvent {
  protected:
-  EndEvent(TrackerEventType type, uint32_t duration);
+  EndEvent(TrackerEventType type);
   struct Duration {
     uint32_t hours;
     uint8_t minutes;
@@ -13,6 +13,7 @@ class EndEvent : public TrackerEvent {
   Duration duration_;
 
  public:
+  void setDuration(uint32_t duration);
   ~EndEvent() override = default;
   std::string toJson() override;
 };

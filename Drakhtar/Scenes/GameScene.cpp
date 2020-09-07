@@ -28,6 +28,13 @@
 #include "Structures/UnitFactory.h"
 #include "Utils/Constants.h"
 
+#include "Telemetria/Configuration.h"
+
+#ifdef TELEMETRY
+#include "Telemetria/TrackerEvents/LevelStartEvent.h"
+#include "Telemetria/TrackerEvents/LevelEndEvent.h"
+#endif
+
 auto audio = SDLAudioManager::getInstance();
 
 GameScene::GameScene(int battle) : battle_(battle) {}
@@ -171,6 +178,10 @@ void GameScene::preload() {
 
   setGame(true);
   team1_->getController()->start();
+
+#ifdef TELEMETRY
+  Tracker::getInstance().trackEvent(new LevelStartEvent(battle_));
+#endif
 }
 
 void GameScene::pause() {
@@ -295,7 +306,15 @@ void GameScene::gameOver(bool victory) {
       new GameOverPanel(this, TextureManager::get("UI-OptionsMenu"),
                         {WIN_WIDTH / 2, WIN_HEIGHT / 2},
                         {WIN_WIDTH / 2, WIN_HEIGHT / 2}, victory);
-  if (victory) saveStatus();
+  if (victory) {
+    saveStatus();
+#ifdef TELEMETRY
+    Tracker::getInstance().trackEvent(new LevelEndEvent(battle_, VICTORY));
+    }else
+    Tracker::getInstance().trackEvent(new LevelEndEvent(battle_, DEFEAT));
+#else
+    }
+#endif
   addGameObject(gameOverPanel_);
 }
 
