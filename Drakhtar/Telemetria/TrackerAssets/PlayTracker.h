@@ -4,9 +4,10 @@
 #include "ITrackerAsset.h"
 
 class PlayTracker : public ITrackerAsset {
-  uint32_t roundCount = 0;
-  time_t startRoundTime = 0;
-  time_t startPlayerTurnTime = 0;
+  uint32_t roundCount_ = 0;
+  time_t startRoundTime_ = 0;
+  time_t startPlayerTurnTime_ = 0;
+  time_t startLevelTime_ = 0;
  public:
   PlayTracker() = default;
   ~PlayTracker() = default;

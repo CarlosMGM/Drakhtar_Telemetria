@@ -14,7 +14,7 @@ void EndEvent::setDuration(uint32_t duration) {
 std::string EndEvent::toJson() {
   std::string str = TrackerEvent::toJson() + +",\n";
 
-  str += R"(    "Duration": ")";
+  str += R"(      "Duration": ")";
   if (duration_.hours != 0) {
     if (duration_.hours < 10) str += "0";
     str += std::to_string(duration_.hours) + ":";
