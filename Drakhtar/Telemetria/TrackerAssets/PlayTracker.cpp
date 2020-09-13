@@ -13,7 +13,7 @@ bool PlayTracker::accept(TrackerEvent* event) {
       return true;
     case PLAYER_TURN_START:
       std::time(&startPlayerTurnTime_);
-      return true;
+      return false;
     case PLAYER_TURN_END:
       std::time(&endTime);
       reinterpret_cast<EndEvent*>(event)->setDuration(
@@ -24,7 +24,7 @@ bool PlayTracker::accept(TrackerEvent* event) {
       std::time(&startRoundTime_);
       reinterpret_cast<RoundStartEvent*>(event)->setRoundNumber(1 +
                                                                 roundCount_);
-      return true;
+      return false;
 
     case ROUND_END:
       std::time(&endTime);
