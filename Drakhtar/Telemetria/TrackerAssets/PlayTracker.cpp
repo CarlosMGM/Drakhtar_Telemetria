@@ -30,8 +30,7 @@ bool PlayTracker::accept(TrackerEvent* event) {
       std::time(&endTime);
       reinterpret_cast<EndEvent*>(event)->setDuration(
           std::difftime(endTime, startRoundTime_));
-      reinterpret_cast<RoundEndEvent*>(event)->setRoundNumber(1 +
-                                                              roundCount_++);
+      reinterpret_cast<RoundEndEvent*>(event)->setRoundNumber(++roundCount_);
       return true;
 
     case LEVEL_START:

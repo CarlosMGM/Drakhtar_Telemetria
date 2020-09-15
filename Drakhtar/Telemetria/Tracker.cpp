@@ -62,8 +62,8 @@ void Tracker::setPersistence(IPersistence* persistence) {
 void Tracker::trackEvent(TrackerEvent* event) {
   bool accepted = false;
   for (auto it = activeTrackers_.begin();
-       !accepted && it != activeTrackers_.end(); ++it)
-    accepted = (*it)->accept(event);
+    it != activeTrackers_.end(); ++it)
+    accepted = (*it)->accept(event) || accepted;
 
   if (accepted) persistence_->send(event);
 }
